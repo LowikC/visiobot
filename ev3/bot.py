@@ -5,21 +5,16 @@ import sys
 
 
 def wait_yes_or_no(timeout_s=5.0):
-    sleep_s = 0.005
-    yes_or_no = -1
-
-    button = ev3.Button()
     start = time.time()
-    while yes_or_no < 0:
+    sleep_s = 0.005
+    button = ev3.Button()
+    while time.time() - start > timeout_s - sleep_s:
         if button.down:
-            yes_or_no = 0
+            return 0
         if button.up:
-            yes_or_no = 1
-
-        if time.time() - start > timeout_s - sleep_s:
-            return yes_or_no
+            return 1
         time.sleep(sleep_s)
-    return yes_or_no
+    return -1
 
 
 def start_game():
@@ -27,7 +22,7 @@ def start_game():
 
     n_trys = 0
     while n_trys < 2:
-        user_answer = wait_yes_or_no(10)
+        user_answer = wait_yes_or_no(5.0)
         if user_answer == 1:
             ev3.Sound.speak("Cool, let's play!").wait()
             return True
