@@ -55,7 +55,15 @@ def get_image(camera):
 
 
 def analyze(image):
-    ev3.Sound.speak("Let me guess what it is.").wait()
+    return "Banana"
+
+
+def give_answer(guess):
+    phrase1 = "It looks like a {guess}".format(guess=guess)
+    phrase2 = "Is it a {guess}?".format(guess=guess)
+    ev3.Sound.speak(phrase1).wait()
+    time.sleep(1)
+    ev3.Sound.speak(phrase2).wait()
 
 
 if __name__ == "__main__":
@@ -70,4 +78,7 @@ if __name__ == "__main__":
         time.sleep(1)
         sys.exit(1)
 
-    analyze(image)
+    ev3.Sound.speak("Let me guess what it is.").wait()
+    guess = analyze(image)
+
+    give_answer(guess)
