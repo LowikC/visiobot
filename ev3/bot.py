@@ -1,5 +1,6 @@
 import ev3dev.ev3 as ev3
 import time
+import cv2
 import sys
 
 
@@ -20,29 +21,53 @@ def wait_yes_or_no(timeout_s=5.0):
         time.sleep(sleep_s)
     return yes_or_no
 
-def main():
+
+def start_game():
     ev3.Sound.speak("Hello Human. I'm a robot, do you want to play with me").wait()
 
-    wait_user_answer = True
     n_trys = 0
-    while wait_user_answer and n_trys < 2:
+    while n_trys < 2:
         user_answer = wait_yes_or_no(10)
         if user_answer == 1:
             ev3.Sound.speak("Cool, let's play!").wait()
-            wait_user_answer = False
+            return True
         elif user_answer == 0:
             ev3.Sound.speak("Oh, you're not funny. Bye!").wait()
-            wait_user_answer = False
+            return False
         else:
             ev3.Sound.speak("Press up for yes, down for no").wait()
             n_trys += 1
 
-    if n_trys > 2:
+    if n_trys >= 2:
         ev3.Sound.speak("It seems you don't want to play. Bye!").wait()
-        time.sleep(5.0)
-        sys.exit()
+        return False
 
-    time.sleep(5.0)
+
+def get_image(camera):
+    ev3.Sound.speak("I will take a picture in").wait()
+    time.sleep(1)
+    ev3.Sound.speak("One...").wait()
+    time.sleep(1)
+    ev3.Sound.speak("Two...").wait()
+    time.sleep(1)
+    ev3.Sound.speak("Three!").wait()
+    return camera.read()
+
+
+def analyze(image):
+    ev3.Sound.speak("Let me guess what it is.").wait()
+
 
 if __name__ == "__main__":
-    main()
+    camera = cv2.VideoCapture(0)
+    if not start_game():
+        sys.exit()
+
+    capture_ok, image = get_image(camera)
+
+    if not capture_ok:
+        ev3.Sound.speak("I can not seeee!").wait()
+        time.sleep(1)
+        sys.exit(1)
+
+    analyze(image)
