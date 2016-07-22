@@ -7,7 +7,8 @@ It respond to HTTP requests to get object category from an image
 import sys
 import logging
 import json
-
+import uuid
+import os
 import cStringIO
 import numpy as np
 import uwsgi
@@ -18,9 +19,11 @@ from flask import Flask, request, Response, abort, make_response
 import tensorflow as tf
 from NodeLookup import NodeLookup
 
+
 MODEL_PATH = '/home/robot/visiobotlocal/server/data/classify_image_graph_def.pb'
 LABEL_LOOKUP_PATH = '/home/robot/visiobotlocal/server/data/imagenet_synset_to_human_label_map.txt'
 UID_LOOKUP_PATH = '/home/robot/visiobotlocal/server/data/imagenet_2012_challenge_label_map_proto.pbtxt'
+UPLOAD_PATH = '/home/robot/visiobotlocal/server/www/upload/'
 
 
 def log_and_abort(msg, code):
@@ -120,8 +123,8 @@ def get_image_in_request():
     #    log_and_abort(u"File is not allowed", 403)
 
     try:
-
         image = Image.open(image_file)
+        image.save(os.path.join(UPLOAD_PATH, str(uuid.uuid1()) + '.jpg'))
     except IOError:
         log_and_abort(u"File is not readable", 403)
 

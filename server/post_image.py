@@ -3,7 +3,7 @@
 This script is used to test upload on the sellit server.
 '''
 import cStringIO
-import requests
+from requests import post, get, Response, codes
 import sys
 import cv2
 from PIL import Image
@@ -25,8 +25,8 @@ if __name__ == '__main__' :
     url_availability = args.url + ":" + args.port + "/available"
     url_suggest = args.url + ":" + args.port + "/predict"
 
-    r = requests.get(url_availability)
-    if r.status_code != requests.codes.ok:
+    r = get(url_availability)
+    if r.status_code != codes.ok:
         print "Service is not available on this url"
         sys.exit()
 
@@ -36,6 +36,7 @@ if __name__ == '__main__' :
     buffer.seek(0)
     files = {'file': buffer}
     #files = {'file': open(args.image, 'rb')}
-    r = requests.post(url_suggest, files=files)
+    r = post(url_suggest, files=files)
 
-    print 'Response from the server: \n{text}'.format(text=r.json())
+
+    print 'Response from the server: \n{text}'.format(text=r.text)

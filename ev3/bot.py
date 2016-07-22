@@ -14,7 +14,7 @@ def wait_yes_or_no(timeout_s=5.0):
     start = time.time()
     sleep_s = 0.005
     button = ev3.Button()
-    while time.time() - start > timeout_s - sleep_s:
+    while timeout_s < 0 or time.time() - start > timeout_s - sleep_s:
         if button.down:
             return 0
         if button.up:
@@ -28,7 +28,7 @@ def start_game():
 
     n_trys = 0
     while n_trys < 2:
-        user_answer = wait_yes_or_no(5.0)
+        user_answer = wait_yes_or_no(-1)
         if user_answer == 1:
             ev3.Sound.speak("Cool, let's play!").wait()
             return True
@@ -55,7 +55,7 @@ def get_image(camera):
     return camera.read()
 
 
-def analyze(image):
+def analyze(image_bgr):
     host_url = 'http://' + HOST_IP + ':' + str(HOST_PORT)
     url_availability = host_url + '/available'
     url_prediction = host_url + '/predict'
@@ -66,7 +66,8 @@ def analyze(image):
         return
 
     # Need to convert image to the rigth format to post it on the server.
-    pil_image = Image.fromarray(image)
+    image_rgb = image_bgr[:, :, (2, 1, 0)]
+    pil_image = Image.fromarray(image_rgb)
     buffer = cStringIO.StringIO()
     pil_image.save(buffer, format='JPEG')
     buffer.seek(0)
