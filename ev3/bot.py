@@ -1,9 +1,13 @@
+import cStringIO
 import ev3dev.ev3 as ev3
 import time
 import cv2
 import sys
 import requests
-import flask
+from PIL import Image
+
+HOST_IP = '192.168.0.21'
+HOST_PORT = 53117
 
 
 def wait_yes_or_no(timeout_s=5.0):
@@ -52,7 +56,26 @@ def get_image(camera):
 
 
 def analyze(image):
-    return "Banana"
+    host_url = 'http://' + HOST_IP + ':' + str(HOST_PORT)
+    url_availability = host_url + '/available'
+    url_prediction = host_url + '/predict'
+
+    r = requests.get(url_availability)
+    if r.status_code != requests.codes.ok:
+        print("Service is not available on this url")
+        return
+
+    # Need to convert image to the rigth format to post it on the server.
+    pil_image = Image.fromarray(image)
+    buffer = cStringIO.StringIO()
+    pil_image.save(buffer, format='JPEG')
+    buffer.seek(0)
+    # Post request
+    files = {'file': buffer}
+    r = requests.post(url_prediction, files=files)
+    result = r.json()
+    print(result)
+    return result["label"]
 
 
 def give_answer(guess):

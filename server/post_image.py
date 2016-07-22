@@ -37,4 +37,5 @@ if __name__ == '__main__' :
     files = {'file': buffer}
     #files = {'file': open(args.image, 'rb')}
     r = requests.post(url_suggest, files=files)
-    print 'Response from the server: \n{text}'.format(text=r.text)
+
+    print 'Response from the server: \n{text}'.format(text=r.json())
