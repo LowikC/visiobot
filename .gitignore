@@ -1,1 +1,4 @@
 .idea/
+server/data/
+server/www/
+*.pyc

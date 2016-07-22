@@ -2,6 +2,8 @@ import ev3dev.ev3 as ev3
 import time
 import cv2
 import sys
+import requests
+import flask
 
 
 def wait_yes_or_no(timeout_s=5.0):
