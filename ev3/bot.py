@@ -1,10 +1,12 @@
 import cStringIO
 import ev3dev.ev3 as ev3
+from RobotMove import RobotMove
 import time
 import cv2
 import sys
 import requests
 from PIL import Image
+
 
 HOST_IP = '192.168.0.21'
 HOST_PORT = 53117
@@ -89,17 +91,26 @@ def give_answer(guess):
 
 if __name__ == "__main__":
     camera = cv2.VideoCapture(0)
+    moves = RobotMove()
+
+    moves.forward(50, 0.2)
     if not start_game():
         sys.exit()
 
-    capture_ok, image = get_image(camera)
+    keep_playing = True
+    while keep_playing:
+        capture_ok, image = get_image(camera)
 
-    if not capture_ok:
-        ev3.Sound.speak("I can not seeee!").wait()
-        time.sleep(1)
-        sys.exit(1)
+        if not capture_ok:
+            ev3.Sound.speak("I can not seeee!").wait()
+            time.sleep(1)
+            sys.exit(1)
 
-    ev3.Sound.speak("Let me guess what it is.").wait()
-    guess = analyze(image)
+        ev3.Sound.speak("Let me guess what it is.").wait()
+        guess = analyze(image)
 
-    give_answer(guess)
+        give_answer(guess)
+
+        ev3.Sound.speak("Do you want to play again?").wait()
+        user_answer = wait_yes_or_no(-1)
+        keep_playing = user_answer == 1
