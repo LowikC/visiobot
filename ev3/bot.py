@@ -4,7 +4,7 @@ from RobotMove import RobotMove
 import time
 import cv2
 import sys
-import requests
+from requests import get, post, codes
 from PIL import Image
 
 
@@ -62,8 +62,8 @@ def analyze(image_bgr):
     url_availability = host_url + '/available'
     url_prediction = host_url + '/predict'
 
-    r = requests.get(url_availability)
-    if r.status_code != requests.codes.ok:
+    r = get(url_availability)
+    if r.status_code != codes.ok:
         print("Service is not available on this url")
         return
 
@@ -75,7 +75,7 @@ def analyze(image_bgr):
     buffer.seek(0)
     # Post request
     files = {'file': buffer}
-    r = requests.post(url_prediction, files=files)
+    r = post(url_prediction, files=files)
     result = r.json()
     print(result)
     return result["label"]
