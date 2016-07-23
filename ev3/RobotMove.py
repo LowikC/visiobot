@@ -13,8 +13,8 @@ class RobotMove(object):
 
     def forward(self, speed, distance_m):
         run_for_s = 1.0
-        self.left_wheel.run_forever(duty_cycle_sp=speed)
-        self.right_wheel.run_forever(duty_cycle_sp=speed)
+        self.left_wheel.run_forever(duty_cycle_sp=-speed)
+        self.right_wheel.run_forever(duty_cycle_sp=-speed)
         time.sleep(run_for_s)
         self.left_wheel.stop()
         self.right_wheel.stop()
