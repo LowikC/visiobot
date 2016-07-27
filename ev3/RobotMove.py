@@ -11,10 +11,24 @@ class RobotMove(object):
         self.right_wheel.reset()
         self.head.reset()
 
-    def forward(self, speed, distance_m):
-        run_for_s = 1.0
-        self.left_wheel.run_forever(duty_cycle_sp=-speed)
-        self.right_wheel.run_forever(duty_cycle_sp=-speed)
-        time.sleep(run_for_s)
-        self.left_wheel.stop()
-        self.right_wheel.stop()
+    def forward(self, speed=100, time_ms=1000):
+        self.left_wheel.run_timed(duty_cycle_sp=-speed, time_sp=time_ms)
+        self.right_wheel.run_timed(duty_cycle_sp=-speed, time_sp=time_ms)
+
+    def head_move(self):
+        speed = 70
+        self.head.run_timed(duty_cycle_sp=-speed, time_sp=100)
+        self.head.run_timed(duty_cycle_sp=speed, time_sp=100)
+
+    def turn_360(self):
+        speed = 100
+        time_ms = 200000 / speed
+        self.left_wheel.run_timed(duty_cycle_sp=-speed, time_sp=time_ms)
+        self.right_wheel.run_timed(duty_cycle_sp=speed, time_sp=time_ms)
+
+    def turn_180(self):
+        speed = 50
+        time_ms = 200000 / speed
+        self.left_wheel.run_timed(duty_cycle_sp=-speed, time_sp=time_ms)
+        self.right_wheel.run_timed(duty_cycle_sp=speed, time_sp=time_ms)
+

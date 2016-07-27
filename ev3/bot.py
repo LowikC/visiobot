@@ -8,7 +8,7 @@ from requests import get, post, codes
 from PIL import Image
 
 
-HOST_IP = '192.168.0.21'
+HOST_IP = 'lowik.sytes.net'
 HOST_PORT = 53117
 
 
@@ -16,10 +16,11 @@ def wait_yes_or_no(timeout_s=5.0):
     start = time.time()
     sleep_s = 0.005
     button = ev3.Button()
+    touch = ev3.TouchSensor()
     while timeout_s < 0 or time.time() - start > timeout_s - sleep_s:
         if button.down:
             return 0
-        if button.up:
+        if button.up or touch.is_pressed():
             return 1
         time.sleep(sleep_s)
     return -1
@@ -47,6 +48,7 @@ def start_game():
 
 
 def get_image(camera):
+    print("Capture image")
     ev3.Sound.speak("I will take a picture in").wait()
     time.sleep(1)
     ev3.Sound.speak("One...").wait()
@@ -58,6 +60,7 @@ def get_image(camera):
 
 
 def analyze(image_bgr):
+    print("Analyze image")
     host_url = 'http://' + HOST_IP + ':' + str(HOST_PORT)
     url_availability = host_url + '/available'
     url_prediction = host_url + '/predict'
@@ -90,6 +93,7 @@ def give_answer(guess):
 
 
 if __name__ == "__main__":
+    print("Starting program")
     camera = cv2.VideoCapture(0)
     moves = RobotMove()
 
@@ -110,6 +114,14 @@ if __name__ == "__main__":
         guess = analyze(image)
 
         give_answer(guess)
+
+        ev3.Sound.speak("Is it the right answer?").wait()
+        user_answer = wait_yes_or_no(-1)
+        if user_answer == 1:
+            moves.turn_360()
+        else:
+            moves.turn_180()
+            moves.forward(speed=20, time_ms=1000)
 
         ev3.Sound.speak("Do you want to play again?").wait()
         user_answer = wait_yes_or_no(-1)
